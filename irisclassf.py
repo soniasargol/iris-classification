@@ -16,21 +16,33 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 
 # Load dataset
-url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/iris.csv"
+url = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
 names = ['sepal-length', 'sepal-width', 'petal-length', 'petal-width', 'class']
 dataset = read_csv(url, names=names)
 
-# print(dataset.shape,type(dataset))
-# print(dataset.head(20))
-# print(dataset.describe())
-# print(dataset.groupby('class').size())
-# dataset.plot(kind='box',subplots=True, layout=(2,2),sharex=False, sharey=False)
-# pyplot.show()
-# dataset.hist()
-# pyplot.show()
-# scatter_matrix(dataset)
-# pyplot.show()
+print("You loaded the iris dataset. This is how it looks like:")
+print("######################################################")
+print("------------------------------------")
+print("\ndataset shape:\n",dataset.shape)
+print("------------------------------------")
+print("\nFirst 5 rows of the dataset:\n",dataset.head())
+print("------------------------------------")
+print("\nDescription of the dataset:\n",dataset.describe())
+print("------------------------------------")
+print("\nDataset groups and the size of each group:\n",dataset.groupby('class').size())
+do_plot= input("\nDo you want to plot the dataset?[y/n]\n")
+if (do_plot.lower() == 'y'):
+	dataset.plot(kind='box',subplots=True, layout=(2,2),sharex=False, sharey=False,title="Box Plot")
+	pyplot.show()
+	dataset.hist()
+	pyplot.suptitle("Histogram")
+	pyplot.show()
+	scatter_matrix(dataset)
+	pyplot.suptitle("Scatter Matrix")
+	pyplot.show()
 
+print("------------------------------------")
+print("Next step is forming the training set and test set from the data. Test size is considered to be 20% of the total size of the data.")
 arr = dataset.values
 X = arr[:,0:4]
 y = arr[:,4]
@@ -38,6 +50,10 @@ X_train, X_validation, Y_train, Y_validation = train_test_split(X, y, test_size=
 # print(X, y)
 # print(X_train, X_validation, Y_train, Y_validation)
 
+print("After forming the training and test set, we apply different machine learning models to see which one is more accurate to represent our data.")
+print("------------------------------------")
+print("The models used in this practice are:")
+print("Logistic Regression,\nLinearDiscriminantAnalysis,\nKNeighborsClassifier,\nDecisionTreeClassifier,\nGaussianNB,\nSVM")
 #Spot check algorithms
 models = []
 models.append(('LR', LogisticRegression(solver='liblinear',multi_class='ovr')))
@@ -47,6 +63,8 @@ models.append(('CART', DecisionTreeClassifier()))
 models.append(('NB', GaussianNB()))
 models.append(('SVM',SVC(gamma='auto')))
 
+print("------------------------------------")
+print("Accuracy of the models are as follows:")
 # Evaluate Each Model In Turn
 results = []
 names = []
@@ -60,9 +78,14 @@ for name, model in models:
 # pyplot.title('Algorithm Comparison')
 # pyplot.show()
 
+print("------------------------------------")
+print("Since SVM is the most accurate in the models, we fit that model to our training set, and use the model to make predictions on test set. The accuracy of our model is:\n")
 model = SVC(gamma='auto')
 model.fit(X_train, Y_train)
 predictions = model.predict(X_validation)
+print("Accuracy score:")
 print(accuracy_score(Y_validation, predictions))
+print("Confusion matrix:")
 print(confusion_matrix(Y_validation, predictions))
+print("Classification report:")
 print(classification_report(Y_validation, predictions))
